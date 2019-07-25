@@ -33,4 +33,9 @@ private postSub : Subscription ;
     this.postSub.unsubscribe();
   }
 
+  onDelete(postId){
+    this.postsServive.deletePost(postId);
+  }
+
+
 }
