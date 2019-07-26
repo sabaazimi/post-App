@@ -2,6 +2,7 @@ import { Component, OnInit, Output, EventEmitter } from '@angular/core';
 import { Post } from '../posts/post.model';
 import { NgForm } from '@angular/forms';
 import { PostsService } from '../posts.service';
+import { ActivatedRoute, ParamMap } from '@angular/router';
 
 
 @Component({
@@ -14,13 +15,19 @@ export class PostCreateComponent implements OnInit {
   enteredTitle:string='';
   enteredContent:string='';
   //@Output() createdPost  = new EventEmitter<Post>();
+  private mode = 'create';
+  private postId:string ;
+  post:Post ;
+  constructor( private postsService: PostsService, public route: ActivatedRoute) { }
 
-  constructor( private postsService: PostsService) { }
-
-  onAddPost(form:NgForm){
+  onSavePost(form:NgForm){
 
     if(form.invalid) return;
-    this.postsService.addPost(form.value.txtTitle, form.value.txtContent) ;
+    if (this.mode === 'create'){
+      this.postsService.addPost(form.value.txtTitle, form.value.txtContent) ;
+    }else {
+      this.postsService.updatePost(this.postId, form.value.txtTitle, form.value.txtContent);
+    }
     form.resetForm()
 
     // const post : Post =
@@ -30,6 +37,20 @@ export class PostCreateComponent implements OnInit {
 
 
   ngOnInit() {
+    this.route.paramMap.subscribe((paramMap:ParamMap) => {
+        if (paramMap.has('postId')) {
+          this.mode = 'edit';
+          this.postId = paramMap.get('postId');
+          this.postsService.getpost(this.postId).subscribe( result => {
+            this.post = {id: result._id, title: result.title, content: result.content }
+          });
+          console.log(`post with id ${this.postId} is updated`);
+        }else {
+          this.mode = 'create';
+          this.postId = null ;
+        }
+    })
+
   }
 
 }

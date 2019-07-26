@@ -4,6 +4,7 @@ import { Subject } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 import { strictEqual } from 'assert';
 import { map } from 'rxjs/operators' ;
+import { stringify } from '@angular/compiler/src/util';
 
 
 
@@ -34,6 +35,26 @@ export class PostsService {
           this.postUpdated.next([...this.posts]);
       }) ;
     ; 
+  }
+
+
+
+  getpost(id: string){
+    //return {...this.posts.find( p => p.id === id)};
+    return this.http.get<{_id:string, title:string, content:string}>(this.nodeUrl+id);
+  }
+
+
+  updatePost(id:string, title:string, content:string){
+    const post = {id: id , title:title, content:content} ;
+    this.http.put(this.nodeUrl+id , post).subscribe( data => {
+      console.log(data);
+      const updatedPosts = [...this.posts];
+      const oldPostIndex = updatedPosts.findIndex( p => p.id = post.id);
+      updatedPosts[oldPostIndex] = post;
+      this.posts = updatedPosts ;
+      this.postUpdated.next([...this.posts]);
+    })
   }
 
   getPostUpdateListener(){
