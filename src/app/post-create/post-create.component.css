@@ -5,3 +5,8 @@ mat-form-field, textarea {
     
 
 }
+
+
+mat-spinner {
+    margin :auto ;
+}

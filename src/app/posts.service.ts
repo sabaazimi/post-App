@@ -4,7 +4,7 @@ import { Subject } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 import { strictEqual } from 'assert';
 import { map } from 'rxjs/operators' ;
-import { stringify } from '@angular/compiler/src/util';
+import { Router } from '@angular/router';
 
 
 
@@ -17,7 +17,12 @@ export class PostsService {
   private postUpdated = new Subject<Post[]>();
   nodeUrl = 'http://localhost:3000/api/posts/' ;
 
-  constructor(private http: HttpClient) { }
+
+  redirectRoute(reqPage:string){
+    this.route.navigate([reqPage]);
+  }
+
+  constructor(private http: HttpClient , private route:Router) { }
 
   getPost(){
     this.http.get<{message:string , posts: any}>(this.nodeUrl)
@@ -50,10 +55,11 @@ export class PostsService {
     this.http.put(this.nodeUrl+id , post).subscribe( data => {
       console.log(data);
       const updatedPosts = [...this.posts];
-      const oldPostIndex = updatedPosts.findIndex( p => p.id = post.id);
+      const oldPostIndex = updatedPosts.findIndex( p => p.id === post.id);
       updatedPosts[oldPostIndex] = post;
       this.posts = updatedPosts ;
       this.postUpdated.next([...this.posts]);
+      this.redirectRoute("/");
     })
   }
 
@@ -70,6 +76,7 @@ export class PostsService {
         console.log(data.message);
         this.posts.push(post) ;
         this.postUpdated.next([...this.posts]);
+        this.redirectRoute("/");
       })
 
 
