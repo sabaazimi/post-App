@@ -31,7 +31,8 @@ export class PostsService {
             return {
               title: post.title,
               content:post.content,
-              id: post._id
+              id: post._id,
+              imagePath :  post.imagePath
             };
           });
       }))
@@ -46,16 +47,40 @@ export class PostsService {
 
   getpost(id: string){
     //return {...this.posts.find( p => p.id === id)};
-    return this.http.get<{_id:string, title:string, content:string}>(this.nodeUrl+id);
+    return this.http.get<{_id:string, title:string, content:string, imagePath:string}>(this.nodeUrl+id);
   }
 
 
-  updatePost(id:string, title:string, content:string){
-    const post = {id: id , title:title, content:content} ;
-    this.http.put(this.nodeUrl+id , post).subscribe( data => {
+  updatePost(id:string, title:string, content:string, image : File | string){
+    let postData: Post | FormData
+    if (typeof(image) ==='object'){
+      postData= new FormData();
+      postData.append("id", id);
+      postData.append("title", title);
+      postData.append("content", content);
+      postData.append("image", image, title);
+
+    }else {
+      postData = {
+        id: id , 
+        title: title,
+        content:content , 
+        imagePath:image
+      };
+
+    }
+
+
+    this.http.put(this.nodeUrl+id , postData).subscribe( data => {
       console.log(data);
       const updatedPosts = [...this.posts];
-      const oldPostIndex = updatedPosts.findIndex( p => p.id === post.id);
+      const oldPostIndex = updatedPosts.findIndex( p => p.id === id);
+      const post: Post = {
+        id: id , 
+        title: title,
+        content:content , 
+        imagePath:data.imagePath
+      }
       updatedPosts[oldPostIndex] = post;
       this.posts = updatedPosts ;
       this.postUpdated.next([...this.posts]);
@@ -67,16 +92,24 @@ export class PostsService {
     return this.postUpdated.asObservable();
   }
 
-  addPost(title:string, content:string){
-    const post = {id: null, title : title , content : content} ;
-    this.http.post<{message:string , postId: string}>(this.nodeUrl, post)
-      .subscribe( (data) => {
-        const id = data.postId ;
-        post.id = id ;
-        console.log(data.message);
-        this.posts.push(post) ;
-        this.postUpdated.next([...this.posts]);
-        this.redirectRoute("/");
+  addPost(title:string, content:string, image:File){
+    const postData = new FormData();
+    postData.append('title', title);
+    postData.append('content', content);
+    postData.append('image', image, title );
+    //const post = {id: null, title : title , content : content} ;
+    this.http.post<{message:string , post:Post}>
+                  (this.nodeUrl, postData)
+                  .subscribe( (data) => { 
+                        const post:Post ={ 
+                          id: data.post.id, 
+                          title: title, 
+                          content:content,
+                          imagePath : data.post.imagePath } ;
+                        console.log(data.message);
+                        this.posts.push(post) ;
+                        this.postUpdated.next([...this.posts]);
+                        this.redirectRoute("/");
       })
 
 

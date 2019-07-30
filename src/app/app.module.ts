@@ -10,7 +10,7 @@ import { MatInputModule,
         MatProgressSpinnerModule} 
 from '@angular/material';
 
-import {FormsModule} from '@angular/forms';
+import {ReactiveFormsModule} from '@angular/forms';
 
 
 import { AppRoutingModule } from './app-routing.module';
@@ -34,7 +34,7 @@ import { HttpClientModule } from '@angular/common/http';
     BrowserModule,
     AppRoutingModule,
     BrowserAnimationsModule,
-    FormsModule,
+    ReactiveFormsModule,
     MatInputModule,
     MatCardModule,
     MatButtonModule,
