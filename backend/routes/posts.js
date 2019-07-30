@@ -62,7 +62,8 @@ router.put('/:id', multer({storage : storage}).single('image') , (req, res, next
 
     Post.updateOne({_id : req.params.id}, post).then(result => {
         res.status(200).json({
-            message:'the post is successfully updated'
+            message:'the post is successfully updated',
+            post:result
         });
         
     })
