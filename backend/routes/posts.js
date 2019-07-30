@@ -70,17 +70,24 @@ router.put('/:id', multer({storage : storage}).single('image') , (req, res, next
 }) ;
 
 router.get('', (req,res) => {
-    // const posts = [
-    //     {id: '12345' , title:'first post', content: ' frst post comming from server'},
-    //     {id: '12346' , title:'second post', content: ' second post comming from server'},
-    //     {id: '12347' , title:'third post', content: ' third post comming from server'},
-    //     {id: '12348' , title:'forth post', content: ' forth post comming from server'}
-    // ];
+    const pageSize = +req.query.pagesize;
+    const currentPage = +req.query.page;
+    const postQuery = Post.find();
+    let fetchedPosts;
+    if(pageSize && currentPage) {
+        postQuery.skip(pageSize *(currentPage - 1))
+        .limit(pageSize);
 
-    Post.find().then( documents => {
+    }
+    postQuery.then( documents => {
+        fetchedPosts = documents ;
+        return Post.count();
+        
+    }).then (count => {
         res.status(200).json({
             message: 'posts were sent successfully',
-            posts:documents
+            posts: fetchedPosts,
+            maxPost : count
         });
     })
    

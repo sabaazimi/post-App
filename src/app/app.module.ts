@@ -7,7 +7,8 @@ import { MatInputModule,
          MatButtonModule,
          MatToolbarModule,
         MatExpansionModule, 
-        MatProgressSpinnerModule} 
+        MatProgressSpinnerModule,
+        MatPaginatorModule} 
 from '@angular/material';
 
 import {ReactiveFormsModule} from '@angular/forms';
@@ -41,6 +42,7 @@ import { HttpClientModule } from '@angular/common/http';
     MatToolbarModule,
     MatProgressSpinnerModule,
     MatExpansionModule,
+    MatPaginatorModule,
     HttpClientModule
   ],
   providers: [PostsService],
