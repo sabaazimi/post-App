@@ -11,7 +11,7 @@ import { MatInputModule,
         MatPaginatorModule} 
 from '@angular/material';
 
-import {ReactiveFormsModule} from '@angular/forms';
+import {ReactiveFormsModule, FormsModule} from '@angular/forms';
 
 
 import { AppRoutingModule } from './app-routing.module';
@@ -20,7 +20,10 @@ import { PostCreateComponent } from './post-create/post-create.component';
 import { HeaderComponent } from './header/header.component';
 import { PostListComponent } from './post-list/post-list.component';
 import { PostsService } from './posts.service';
-import { HttpClientModule } from '@angular/common/http';
+import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
+import { LoginComponent } from './auth/login/login/login.component';
+import { SignupComponent } from './auth/signup/signup/signup.component';
+import { AuthInterceptor } from './auth/auth-interceptor';
 
 
 
@@ -29,7 +32,9 @@ import { HttpClientModule } from '@angular/common/http';
     AppComponent,
     PostCreateComponent,
     HeaderComponent,
-    PostListComponent
+    PostListComponent,
+    LoginComponent,
+    SignupComponent
   ],
   imports: [
     BrowserModule,
@@ -43,9 +48,10 @@ import { HttpClientModule } from '@angular/common/http';
     MatProgressSpinnerModule,
     MatExpansionModule,
     MatPaginatorModule,
-    HttpClientModule
+    HttpClientModule,
+    FormsModule
   ],
-  providers: [PostsService],
+  providers: [{provide: HTTP_INTERCEPTORS , useClass: AuthInterceptor, multi: true} ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

@@ -4,6 +4,7 @@ import { PostsService } from '../posts.service';
 import { Subscription } from 'rxjs' ;
 import { PageEvent } from '@angular/material';
 import { PostCreateComponent } from '../post-create/post-create.component';
+import { AuthService } from '../auth/auth.service';
 @Component({
   selector: 'app-post-list',
   templateUrl: './post-list.component.html',
@@ -24,20 +25,29 @@ totalPost = 0;
 postPerPage = 2 ;
 currentPage = 1 ;
 pageSizeOption = [1, 2, 5, 10];
+isUserAuthenticated = false ;
 private postSub : Subscription ;
+private authStatusSubs: Subscription ;
 
-  constructor(public postsServive: PostsService) { }
+
+  constructor(public postsServive: PostsService, private authService:AuthService) { }
 
   ngOnInit() {
     this.isLoading = true ;
-   this.postsServive.getPost(this.postPerPage, this.currentPage);
+    this.postsServive.getPost(this.postPerPage, this.currentPage);
     this. postSub = this.postsServive.getPostUpdateListener()
                       .subscribe((postData : {posts: Post[] , postCount: number}) => {
                           this.isLoading=false ;
                           this.totalPost = postData.postCount;
                           this.posts = postData.posts;
                           //this.totalPost = posts.length ;
-                      })
+                      });
+    this.isUserAuthenticated = this.authService.isAuth();
+    this.authStatusSubs = this.authService.getAuthStatusListener()
+      .subscribe( isAuthenticated => {
+
+        this.isUserAuthenticated = isAuthenticated ;
+    });
   }  
 
   onChangePage(pageData: PageEvent){

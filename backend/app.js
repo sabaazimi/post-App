@@ -4,6 +4,7 @@ const bodyParser = require('body-parser');
 const Post = require('./models/post');
 const mongoose =require('mongoose');
 const postRoute = require('./routes/posts');
+const userRoute = require('./routes/user');
 const path = require('path');
 
 mongoose.connect('mongodb+srv://saba:UlEpf2qfNz2uJnkk@cluster0-fqdxo.mongodb.net/test?retryWrites=true&w=majority')
@@ -21,7 +22,7 @@ app.use((req, res, next) => {
     res.setHeader("Access-Control-Allow-Origin", "*");
     res.setHeader(
       "Access-Control-Allow-Headers",
-      "Origin, X-Requested-With, Content-Type, Accept"
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization"
     );
     res.setHeader(
       "Access-Control-Allow-Methods",
@@ -32,8 +33,8 @@ app.use((req, res, next) => {
   
  // mongodb password:  UlEpf2qfNz2uJnkk
 
-app.use('/api/posts/',postRoute);
-
+app.use('/api/posts',postRoute);
+app.use('/api/user',userRoute);
 
 
 module.exports = app ;
