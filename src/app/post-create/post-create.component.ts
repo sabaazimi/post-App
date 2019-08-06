@@ -1,9 +1,11 @@
-import { Component, OnInit, Output, EventEmitter } from '@angular/core';
+import { Component, OnInit, Output, EventEmitter, OnDestroy } from '@angular/core';
 import { Post } from '../posts/post.model';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { PostsService } from '../posts.service';
 import { ActivatedRoute, ParamMap } from '@angular/router';
 import { mimeType } from './mime-type.validator' ;
+import { Subscription } from 'rxjs';
+import { AuthService } from '../auth/auth.service';
 
 
 @Component({
@@ -11,7 +13,7 @@ import { mimeType } from './mime-type.validator' ;
   templateUrl: './post-create.component.html',
   styleUrls: ['./post-create.component.css']
 })
-export class PostCreateComponent implements OnInit {
+export class PostCreateComponent implements OnInit, OnDestroy {
 
   enteredTitle:string='';
   enteredContent:string='';
@@ -22,8 +24,11 @@ export class PostCreateComponent implements OnInit {
   form : FormGroup ;
   imagePreview;
   isLoading = false ;
+  private authStatusSubs: Subscription;
 
-  constructor( private postsService: PostsService, public route: ActivatedRoute) { }
+  constructor( private postsService: PostsService, 
+               public route: ActivatedRoute,
+               public authService: AuthService) { }
 
   onSavePost(){
 
@@ -64,6 +69,11 @@ export class PostCreateComponent implements OnInit {
 
 
   ngOnInit() {
+    this.authStatusSubs = this.authService.getAuthStatusListener().subscribe(
+      authData => {
+        this.isLoading = false ;
+      }
+    )
     this.form = new FormGroup({
       title : new FormControl(null,{
         validators: [Validators.required , Validators.minLength(3)]
@@ -87,7 +97,9 @@ export class PostCreateComponent implements OnInit {
               id: result._id, 
               title: result.title, 
               content: result.content,
-              imagePath : result.imagePath } ;
+              imagePath : result.imagePath,
+              creator: result.creator
+            } ;
             this.form.setValue({
               title: this.post.title,
               content:this.post.content,
@@ -104,4 +116,8 @@ export class PostCreateComponent implements OnInit {
 
   }
 
+
+  ngOnDestroy() {
+    this.authStatusSubs.unsubscribe();
+  }
 }

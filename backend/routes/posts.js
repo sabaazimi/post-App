@@ -31,23 +31,30 @@ router.post('', checkAuth, multer({storage : storage}).single('image') , (req, r
     const post = new Post({
         title: req.body.title,
         content:req.body.content,
-        imagePath : URL + '/images/' + req.file.filename
+        imagePath : URL + '/images/' + req.file.filename,
+        creator : req.userData.userId
     });
     post.save().then(result => {
             console.log(post);
             res.status(201).json({message:'post added successfully' , 
             post : {
-                id : post._id,
-                title : post.title,
-                content : post.content,
-                imagePath : post.imagePath
-            }
+                id : result._id,
+                ...result
+               }
         });
+    })
+    .catch(error => {
+        res.status(500).json({
+            message:" post Creation failed !!!"
+        })
     });
   
 }) ; 
 
-
+/*
+* Update a post 
+*
+*/
 router.put('/:id', checkAuth, multer({storage : storage}).single('image') , (req, res, next) => {
     let imagePath = req.body.imagePath;
     if(req.file){
@@ -58,15 +65,25 @@ router.put('/:id', checkAuth, multer({storage : storage}).single('image') , (req
         _id:req.body.id,
         title: req.body.title,
         content: req.body.content,
-        imagePath:imagePath
+        imagePath:imagePath,
+        creator : req.userData.userId
     });
 
-    Post.updateOne({_id : req.params.id}, post).then(result => {
-        res.status(200).json({
+    Post.updateOne({_id : req.params.id , creator: req.userData.userId}, post).then(result => {
+
+        (result.nModified > 0) ?  res.status(200).json({
             message:'the post is successfully updated',
             post:result
-        });
+        }): res.status(401).json({
+            message:'Not the authorized user',
+            post:result
+        })
         
+    })
+    .catch(error => {
+        res.status(500).json({
+            message:"couldn't update the post."
+        })
     })
 }) ;
 
@@ -91,6 +108,11 @@ router.get('', (req,res) => {
             maxPost : count
         });
     })
+    .catch( error => {
+        res.status(500).json({
+            message:" Fetchong post not found !!!"
+        })
+    })
 
 });
 
@@ -101,13 +123,28 @@ router.get('/:id', (req, res, next) => {
         (post) ? 
             res.status(200).json(post):
                 res.status(404).json({message:'post not found'}); 
+    }).catch( error => {
+        res.status(500).json({
+            message:" Fetchong post not found !!!"
+        })
     });
 });
 
 router.delete('/:id', checkAuth, (req, res, next) =>{
-   Post.deleteOne({_id: req.params.id}).then(result => {
+   Post.deleteOne({_id: req.params.id , creator : req.userData.userId}).then(result => {
+    (result.n > 0) ?  res.status(200).json({
+        message:'the post is successfully updated',
+        post:result
+    }): res.status(401).json({
+        message:'Not the authorized user',
+        post:result
+    })
        console.log(result);
        res.status(200).json({message:'successfully deleted'});
+    }).catch( error => {
+        res.status(500).json({
+            message:" Deleting post failed!!!"
+        })
     })
 
 

@@ -27,6 +27,7 @@ currentPage = 1 ;
 pageSizeOption = [1, 2, 5, 10];
 isUserAuthenticated = false ;
 private postSub : Subscription ;
+userId:string ;
 private authStatusSubs: Subscription ;
 
 
@@ -35,6 +36,7 @@ private authStatusSubs: Subscription ;
   ngOnInit() {
     this.isLoading = true ;
     this.postsServive.getPost(this.postPerPage, this.currentPage);
+    this.userId = this.authService.getUserId();
     this. postSub = this.postsServive.getPostUpdateListener()
                       .subscribe((postData : {posts: Post[] , postCount: number}) => {
                           this.isLoading=false ;
@@ -47,6 +49,7 @@ private authStatusSubs: Subscription ;
       .subscribe( isAuthenticated => {
 
         this.isUserAuthenticated = isAuthenticated ;
+        this.userId = this.authService.getUserId();
     });
   }  
 
@@ -67,6 +70,8 @@ private authStatusSubs: Subscription ;
     this.postsServive.deletePost(postId)
     .subscribe(()=>{
       this.postsServive.getPost(this.postPerPage, this.currentPage);
+    } , () => {
+      this.isLoading =false ;
     })
   }
 

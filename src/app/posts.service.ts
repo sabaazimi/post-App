@@ -33,7 +33,8 @@ export class PostsService {
               title: post.title,
               content:post.content,
               id: post._id,
-              imagePath :  post.imagePath
+              imagePath :  post.imagePath,
+              creator: post.creator
             };
           }), maxPosts : postData.maxPost
       }}))
@@ -50,7 +51,13 @@ export class PostsService {
 
   getpost(id: string){
     //return {...this.posts.find( p => p.id === id)};
-    return this.http.get<{_id:string, title:string, content:string, imagePath:string}>(this.nodeUrl+id);
+    return this.http.get<{
+      _id:string, 
+      title:string, 
+      content:string, 
+      imagePath:string,
+      creator : string
+    }>(this.nodeUrl+id);
   }
 
 
@@ -68,7 +75,8 @@ export class PostsService {
         id: id , 
         title: title,
         content:content , 
-        imagePath:image
+        imagePath:image,
+        creator:null
       };
 
     }
