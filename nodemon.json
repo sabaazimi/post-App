@@ -1,0 +1,7 @@
+{
+    "env":{
+        "MONGO_ATLAS_PW":"UlEpf2qfNz2uJnkk",
+        "JWT_KEY":"what_the_Fuck_is_the_Secret"
+
+    }
+}

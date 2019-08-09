@@ -5,7 +5,7 @@ import { HttpClient } from '@angular/common/http';
 import { strictEqual } from 'assert';
 import { map } from 'rxjs/operators' ;
 import { Router } from '@angular/router';
-
+import { environment } from "../environments/environment";
 
 
 @Injectable({
@@ -15,7 +15,7 @@ export class PostsService {
 
   private posts : Post[] = [] ;
   private postUpdated = new Subject<{posts: Post[], postCount:number}>();
-  nodeUrl = 'http://localhost:3000/api/posts/' ;
+  nodeUrl = environment.apiURL + '/posts/' ;
 
 
   redirectRoute(reqPage:string){

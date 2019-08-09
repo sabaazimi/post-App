@@ -7,7 +7,7 @@ const postRoute = require('./routes/posts');
 const userRoute = require('./routes/user');
 const path = require('path');
 
-mongoose.connect('mongodb+srv://saba:UlEpf2qfNz2uJnkk@cluster0-fqdxo.mongodb.net/test?retryWrites=true&w=majority')
+mongoose.connect("mongodb+srv://saba:"+ process.env.MONGO_ATLAS_PW + "@cluster0-fqdxo.mongodb.net/test?retryWrites=true&w=majority")
     .then(()=>{
         console.log('connection succesfull');
     }).catch(() => {
